@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export function PasswordGeneratorForm({ form, onGenerate, onCopy, onCopyAll }) {
+export function GeneratorForm({ form, onGenerate, onCopy, onCopyAll }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-6">

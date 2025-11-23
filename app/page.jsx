@@ -3,18 +3,18 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { passwordSchema } from "@/lib/schemas/password";
+import { generatorSchema } from "@/lib/zod";
 import { useFormPersistence } from "@/hooks/use-form-persistence";
 import { usePasswordGenerator } from "@/hooks/use-password-generator";
 
-import { PasswordGeneratorForm } from "@/components/password-generator-form";
-import { PasswordGeneratorResult } from "@/components/password-generator-result";
+import { GeneratorForm } from "@/components/generator-form";
+import { PasswordResult } from "@/components/password-result";
 
 export default function HomePage() {
   const [formReady, setFormReady] = useState(false);
 
   const form = useForm({
-    resolver: zodResolver(passwordSchema),
+    resolver: zodResolver(generatorSchema),
     defaultValues: {
       length: 8,
       quantity: 1,
@@ -24,7 +24,7 @@ export default function HomePage() {
   });
 
   // Load saved settings if available
-  useFormPersistence(form, passwordSchema, () => setFormReady(true));
+  useFormPersistence(form, generatorSchema, () => setFormReady(true));
 
   const { generate, copySingle, copyAll, passwords, copiedIndex, displayRef } =
     usePasswordGenerator();
@@ -45,14 +45,14 @@ export default function HomePage() {
           Password Generator
         </h1>
 
-        <PasswordGeneratorForm
+        <GeneratorForm
           form={form}
           onGenerate={generate}
           onCopy={copySingle}
           onCopyAll={copyAll}
         />
 
-        <PasswordGeneratorResult
+        <PasswordResult
           displayRef={displayRef}
           passwords={passwords}
           copiedIndex={copiedIndex}

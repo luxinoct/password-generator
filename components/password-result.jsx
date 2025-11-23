@@ -3,11 +3,7 @@
 import { cn } from "@/lib/utils";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-export function PasswordGeneratorResult({
-  displayRef,
-  passwords,
-  copiedIndex,
-}) {
+export function PasswordResult({ displayRef, passwords, copiedIndex }) {
   return (
     <div className="flex-1 mt-6 min-h-0 max-h-screen">
       <ScrollArea className="h-full border rounded-md shadow-xs">
