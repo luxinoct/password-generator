@@ -41,7 +41,7 @@ export default function HomePage() {
   return (
     <main className="flex justify-center min-h-screen md:h-screen bg-accent">
       <div className="flex flex-col w-full max-w-3xl p-6 bg-background flex-1">
-        <h1 className="text-2xl font-bold text-center mb-6">
+        <h1 className="text-2xl font-bold text-center mb-8">
           Password Generator
         </h1>
 

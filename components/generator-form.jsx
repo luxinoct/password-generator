@@ -25,7 +25,7 @@ export function GeneratorForm({ form, onGenerate, onCopy, onCopyAll }) {
             name="length"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Password length</FormLabel>
+                <FormLabel>Length</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -51,7 +51,7 @@ export function GeneratorForm({ form, onGenerate, onCopy, onCopyAll }) {
 
         <div className="space-y-2">
           <Label>Options</Label>
-          <div className="grid md:grid-cols-2 gap-1 border rounded-md p-4">
+          <div className="grid md:grid-cols-2 gap-2 border rounded-md p-4">
             <FormField
               control={form.control}
               name="requiredOptions"
