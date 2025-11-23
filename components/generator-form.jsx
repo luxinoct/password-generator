@@ -1,6 +1,6 @@
 "use client";
 
-import { requiredOptions, optionalOptions } from "@/lib/constants/options";
+import { requiredOptions, optionalOptions } from "@/lib/constants";
 
 import {
   Form,

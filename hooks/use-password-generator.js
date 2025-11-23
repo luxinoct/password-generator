@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { rdp } from "@/lib/rdp";
-import { copyToClipboard } from "@/lib/utils";
+import { copyToClipboard, generatePassword } from "@/lib/utils";
 
 export function usePasswordGenerator() {
   const [passwords, setPasswords] = useState([]);
@@ -25,7 +24,7 @@ export function usePasswordGenerator() {
       const optionMap = Object.fromEntries(options.map((opt) => [opt, true]));
 
       const generated = Array.from({ length: quantity }, () =>
-        rdp(optionMap, length)
+        generatePassword(optionMap, length)
       );
 
       setPasswords(generated);
