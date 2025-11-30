@@ -7,8 +7,17 @@ import { passwordSchema } from "@/lib/schemas/password";
 import { usePasswordGenerator } from "@/hooks/use-password-generator";
 import { useFormPersistence } from "@/hooks/use-form-persistence";
 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Field } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { PasswordForm } from "@/components/password-form";
-import { PasswordResult } from "@/components/password-result";
 
 export default function HomePage() {
   const form = useForm({
@@ -52,21 +61,51 @@ export default function HomePage() {
   if (!formReady) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-accent">
-      <div className="grid md:grid-cols-2 gap-4 w-full">
-        <PasswordForm
-          form={form}
-          onSubmit={onSubmit}
-          onCopySingle={copySingle}
-          onCopyAll={copyAll}
-        />
+    <div className="flex min-h-screen justify-center md:h-screen p-4 bg-accent">
+      <Card className="w-full max-w-3xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">
+            Password Generator
+          </CardTitle>
+        </CardHeader>
 
-        <PasswordResult
-          displayRef={displayRef}
-          passwords={passwords}
-          copiedIndex={copiedIndex}
-        />
-      </div>
+        <CardContent>
+          <PasswordForm form={form} onSubmit={onSubmit} />
+        </CardContent>
+
+        <CardFooter className="flex flex-col gap-6 flex-1 min-h-0">
+          <Field className="grid grid-cols-3 *:cursor-pointer">
+            <Button type="submit" form="rhf-password-form">
+              Submit
+            </Button>
+            <Button variant="outline" type="button" onClick={copySingle}>
+              Copy
+            </Button>
+            <Button variant="outline" type="button" onClick={copyAll}>
+              Copy All
+            </Button>
+          </Field>
+
+          {/* Scrollable container */}
+          <div className="w-full flex-1 min-h-0 max-h-[50vh] md:max-h-screen">
+            <ScrollArea className="h-full overflow-auto rounded-md border">
+              <div className="space-y-1 p-2" ref={displayRef}>
+                {passwords.map((item, index) => (
+                  <PasswordItem
+                    key={index}
+                    item={item}
+                    highlighted={copiedIndex === "all" || copiedIndex === index}
+                  />
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   );
+}
+
+function PasswordItem({ item, highlighted }) {
+  return <p className={highlighted ? "bg-accent" : ""}>{item}</p>;
 }
