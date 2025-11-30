@@ -1,26 +1,28 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function PasswordResult({ displayRef, passwords, copiedIndex }) {
+function PasswordItem({ item, highlighted }) {
+  return <p className={highlighted ? "bg-accent" : ""}>{item}</p>;
+}
+
+export function PasswordResult({ displayRef, passwords = [], copiedIndex }) {
   return (
-    <div className="flex-1 mt-6 min-h-0 max-h-screen">
-      <ScrollArea className="h-full border rounded-md shadow-xs">
-        <div ref={displayRef} className="p-4 space-y-0.5">
-          {passwords.map((item, index) => (
-            <div
-              key={index}
-              className={cn(
-                (copiedIndex === "all" || index === copiedIndex) && "bg-accent"
-              )}
-            >
-              {item}
-            </div>
-          ))}
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
-    </div>
+    <Card className="h-[50vh] md:h-[80vh]">
+      <CardContent className="h-full">
+        <ScrollArea className="h-full flex-1 overflow-auto border rounded-md p-2">
+          <div className="space-y-1" ref={displayRef}>
+            {passwords.map((item, index) => (
+              <PasswordItem
+                key={index}
+                item={item}
+                highlighted={copiedIndex === "all" || copiedIndex === index}
+              />
+            ))}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
   );
 }

@@ -4,23 +4,31 @@ import { copyToClipboard, generatePassword } from "@/lib/utils";
 export function usePasswordGenerator() {
   const [passwords, setPasswords] = useState([]);
   const [copiedIndex, setCopiedIndex] = useState(null);
+
   const displayRef = useRef(null);
 
+  // -----------------------------
+  // SCROLL HELPERS
+  // -----------------------------
   const scrollToTop = useCallback(() => {
     displayRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   const scrollToIndex = useCallback((index) => {
-    const el = displayRef.current?.children?.[index];
-    el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const list = displayRef.current;
+    if (!list || !list.children?.[index]) return;
+
+    list.children[index].scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
   }, []);
 
+  // -----------------------------
+  // GENERATE PASSWORDS
+  // -----------------------------
   const generate = useCallback(
-    ({ length, quantity, requiredOptions, optionalOptions }) => {
-      const filteredOptional = optionalOptions.filter(
-        (opt) => opt !== "saveSetting"
-      );
-      const options = [...requiredOptions, ...filteredOptional];
+    ({ length, quantity, options }) => {
       const optionMap = Object.fromEntries(options.map((opt) => [opt, true]));
 
       const generated = Array.from({ length: quantity }, () =>
@@ -34,30 +42,37 @@ export function usePasswordGenerator() {
     [scrollToTop]
   );
 
-  // Copy one password
+  // -----------------------------
+  // COPY ONE PASSWORD
+  // -----------------------------
   const copySingle = useCallback(async () => {
-    if (!passwords.length) return;
+    if (passwords.length === 0) return;
 
     const nextIndex =
-      copiedIndex === null || copiedIndex === "all"
-        ? 0
-        : (copiedIndex + 1) % passwords.length;
+      copiedIndex !== null && copiedIndex !== "all"
+        ? (copiedIndex + 1) % passwords.length
+        : 0;
 
-    const success = await copyToClipboard(passwords[nextIndex]);
-    if (success) setCopiedIndex(nextIndex);
+    const didCopy = await copyToClipboard(passwords[nextIndex]);
+    if (didCopy) setCopiedIndex(nextIndex);
   }, [passwords, copiedIndex]);
 
-  // Copy all passwords
+  // -----------------------------
+  // COPY ALL PASSWORDS
+  // -----------------------------
   const copyAll = useCallback(async () => {
     if (!passwords.length) return;
 
-    const success = await copyToClipboard(passwords.join("\n"));
-    if (success) {
+    const didCopy = await copyToClipboard(passwords.join("\n"));
+    if (didCopy) {
       setCopiedIndex("all");
       scrollToTop();
     }
   }, [passwords, scrollToTop]);
 
+  // -----------------------------
+  // AUTO-SCROLL WHEN COPY CHANGES
+  // -----------------------------
   useEffect(() => {
     if (typeof copiedIndex === "number") {
       scrollToIndex(copiedIndex);

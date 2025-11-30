@@ -1,73 +1,72 @@
-// "use client";
+"use client";
 
-// import { useState, useEffect } from "react";
-// import { useForm } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { generatorSchema } from "@/lib/schemas/password";
-// import { useFormPersistence } from "@/hooks/use-form-persistence";
-// import { usePasswordGenerator } from "@/hooks/use-password-generator";
-
-// import { GeneratorForm } from "@/components/generator-form";
-// import { PasswordResult } from "@/components/password-result";
-
-// export default function HomePage() {
-//   const [formReady, setFormReady] = useState(false);
-
-//   const form = useForm({
-//     resolver: zodResolver(generatorSchema),
-//     defaultValues: {
-//       length: 8,
-//       quantity: 1,
-//       requiredOptions: ["uppercase", "lowercase", "number", "symbol"],
-//       optionalOptions: [],
-//     },
-//   });
-
-//   // Load saved settings if available
-//   useFormPersistence(form, generatorSchema, () => setFormReady(true));
-
-//   const { generate, copySingle, copyAll, passwords, copiedIndex, displayRef } =
-//     usePasswordGenerator();
-
-//   useEffect(() => {
-//     if (!formReady) return;
-
-//     const submit = form.handleSubmit(generate);
-//     submit();
-//   }, [formReady, form, generate]);
-
-//   if (!formReady) return null;
-
-//   return (
-//     <main className="flex justify-center min-h-screen md:h-screen bg-accent">
-//       <div className="flex flex-col w-full max-w-3xl p-6 bg-background flex-1">
-//         <h1 className="text-2xl font-bold text-center mb-8">
-//           Password Generator
-//         </h1>
-
-//         <GeneratorForm
-//           form={form}
-//           onGenerate={generate}
-//           onCopy={copySingle}
-//           onCopyAll={copyAll}
-//         />
-
-//         <PasswordResult
-//           displayRef={displayRef}
-//           passwords={passwords}
-//           copiedIndex={copiedIndex}
-//         />
-//       </div>
-//     </main>
-//   );
-// }
+import { useEffect, useState, useCallback } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { passwordSchema } from "@/lib/schemas/password";
+import { usePasswordGenerator } from "@/hooks/use-password-generator";
+import { useFormPersistence } from "@/hooks/use-form-persistence";
 
 import { PasswordForm } from "@/components/password-form";
+import { PasswordResult } from "@/components/password-result";
 
 export default function HomePage() {
+  const form = useForm({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: {
+      length: 8,
+      quantity: 1,
+      options: ["uppercase", "lowercase", "number", "symbol"],
+    },
+  });
+
+  const [formReady, setFormReady] = useState(false);
+
+  // Load saved settings if available
+  useFormPersistence(form, passwordSchema, () => setFormReady(true));
+
+  const { generate, copySingle, copyAll, passwords, copiedIndex, displayRef } =
+    usePasswordGenerator();
+
+  // Helper for generate
+  const runGenerateFromForm = useCallback(() => {
+    const { length, quantity, options } = form.getValues();
+    generate({
+      length,
+      quantity,
+      options: options.filter((opt) => opt !== "saveSetting"),
+    });
+  }, [form, generate]);
+
+  // Generate password automatically once the form is ready
+  useEffect(() => {
+    if (!formReady) return;
+    runGenerateFromForm();
+  }, [formReady, runGenerateFromForm]);
+
+  // Standard submit handler
+  const onSubmit = () => {
+    runGenerateFromForm();
+  };
+
+  if (!formReady) return null;
+
   return (
-    <div className="min-h-screen grid md:grid-cols-2 gap-4 p-4 bg-accent">
-      <PasswordForm />
+    <div className="min-h-screen flex items-center justify-center p-4 bg-accent">
+      <div className="grid md:grid-cols-2 gap-4 w-full">
+        <PasswordForm
+          form={form}
+          onSubmit={onSubmit}
+          onCopySingle={copySingle}
+          onCopyAll={copyAll}
+        />
+
+        <PasswordResult
+          displayRef={displayRef}
+          passwords={passwords}
+          copiedIndex={copiedIndex}
+        />
+      </div>
     </div>
   );
 }

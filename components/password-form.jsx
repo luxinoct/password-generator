@@ -1,18 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
-import { passwordSchema } from "@/lib/schemas/password";
-import { optionItems } from "@/lib/constants/option";
-
-import {
-  Field,
-  FieldGroup,
-  FieldSet,
-  FieldLabel,
-  FieldLegend,
-  FieldError,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
 import {
   Card,
   CardHeader,
@@ -20,25 +8,12 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 
-export function PasswordForm() {
-  const form = useForm({
-    resolver: zodResolver(passwordSchema),
-    defaultValues: {
-      length: 8,
-      quantity: 1,
-      options: [],
-    },
-  });
+import { FieldCheckbox } from "@/components/field-checkbox";
+import { FieldInput } from "@/components/field-input";
 
-  function onSubmit(data) {
-    console.log(data);
-  }
-
+export function PasswordForm({ form, onSubmit, onCopySingle, onCopyAll }) {
   return (
     <Card>
       <CardHeader className="text-center">
@@ -49,126 +24,38 @@ export function PasswordForm() {
         <form id="rhf-password-form" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldSet>
             <FieldGroup className="grid grid-cols-2">
-              <Controller
+              <FieldInput
                 name="length"
                 control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel
-                      htmlFor="rhf-password-form-length"
-                      aria-invalid={fieldState.invalid}
-                    >
-                      Password Length
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="rhf-password-form-length"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                title="Password Length"
               />
 
-              <Controller
+              <FieldInput
                 name="quantity"
                 control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel
-                      htmlFor="rhf-password-form-quantity"
-                      aria-invalid={fieldState.invalid}
-                    >
-                      Quantity
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="rhf-password-form-quantity"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                title="Quantity"
               />
             </FieldGroup>
 
-            <FieldGroup>
-              <FieldSet>
-                <FieldLegend variant="label" className="text-sm">
-                  <Label>Options</Label>
-                </FieldLegend>
-                <Controller
-                  name="options"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <FieldGroup data-slot="checkbox-group">
-                      {optionItems.map((item) => {
-                        const REQUIRED_OPTION_IDS = [
-                          "uppercase",
-                          "lowercase",
-                          "number",
-                          "symbol",
-                        ];
-                        const isRequired = REQUIRED_OPTION_IDS.includes(
-                          item.id
-                        );
-
-                        return (
-                          <Field
-                            key={item.id}
-                            orientation="horizontal"
-                            data-invalid={fieldState.invalid && isRequired}
-                          >
-                            <Checkbox
-                              id={`rhf-password-form-${item.id}`}
-                              checked={field.value.includes(item.id)}
-                              onCheckedChange={(checked) => {
-                                const newValue = checked
-                                  ? [...field.value, item.id]
-                                  : field.value.filter(
-                                      (value) => value !== item.id
-                                    );
-                                field.onChange(newValue);
-                              }}
-                              aria-invalid={fieldState.invalid && isRequired}
-                            />
-
-                            <FieldLabel
-                              htmlFor={`rhf-password-form-${item.id}`}
-                              aria-invalid={fieldState.invalid && isRequired}
-                              className="font-normal"
-                            >
-                              {item.title}
-                            </FieldLabel>
-                          </Field>
-                        );
-                      })}
-
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </FieldGroup>
-                  )}
-                />
-              </FieldSet>
-            </FieldGroup>
+            <FieldCheckbox
+              title="Options"
+              name="options"
+              control={form.control}
+            />
           </FieldSet>
         </form>
       </CardContent>
 
+      {/* Action button group */}
       <CardFooter>
         <Field className="grid grid-cols-3 *:cursor-pointer">
           <Button type="submit" form="rhf-password-form">
             Submit
           </Button>
-          <Button variant="outline" type="button">
+          <Button variant="outline" type="button" onClick={onCopySingle}>
             Copy
           </Button>
-          <Button variant="outline" type="button">
+          <Button variant="outline" type="button" onClick={onCopyAll}>
             Copy All
           </Button>
         </Field>

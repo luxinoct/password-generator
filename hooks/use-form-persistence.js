@@ -33,7 +33,7 @@ export function useFormPersistence(form, schema, onReady) {
   useEffect(() => {
     const subscription = form.watch((value) => {
       try {
-        const isSaveEnabled = value.optionalOptions.includes("saveSetting");
+        const isSaveEnabled = value.options.includes("saveSetting");
 
         if (isSaveEnabled) {
           localStorage.setItem(storageKey, JSON.stringify(value));
