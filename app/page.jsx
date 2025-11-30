@@ -76,7 +76,7 @@ export default function HomePage() {
         <CardFooter className="flex flex-col gap-6 flex-1 min-h-0">
           <Field className="grid grid-cols-3 *:cursor-pointer">
             <Button type="submit" form="rhf-password-form">
-              Submit
+              Generate
             </Button>
             <Button variant="outline" type="button" onClick={copySingle}>
               Copy
