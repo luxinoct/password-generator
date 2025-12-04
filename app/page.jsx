@@ -86,7 +86,7 @@ export default function HomePage() {
         </CardContent>
 
         <CardFooter>
-          <ScrollArea className="h-full max-h-[50vh] md:max-h-screen w-full overflow-auto rounded-md border">
+          <ScrollArea className="h-full max-h-[50vh] w-full overflow-auto rounded-md border">
             <div className="p-4 space-y-1">
               {passwords.map((item, index) => {
                 const highlighted =
@@ -100,18 +100,6 @@ export default function HomePage() {
               })}
             </div>
           </ScrollArea>
-
-          {/* <ScrollArea className="w-full h-full overflow-auto rounded-md border">
-            <div ref={displayRef} className="p-2 space-y-1">
-              {passwords.map((item, index) => (
-                <PasswordItem
-                  key={index}
-                  item={item}
-                  highlighted={copiedIndex === "all" || copiedIndex === index}
-                />
-              ))}
-            </div>
-          </ScrollArea> */}
         </CardFooter>
       </Card>
     </div>
