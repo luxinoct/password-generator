@@ -61,7 +61,7 @@ export default function HomePage() {
   if (!formReady) return null;
 
   return (
-    <div className="flex min-h-screen items-center md:justify-center p-4 bg-accent">
+    <div className="min-h-screen md:flex md:items-center md:justify-center p-4 bg-accent">
       <Card className="w-full max-w-4xl">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold">
