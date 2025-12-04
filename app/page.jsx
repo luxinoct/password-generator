@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { PasswordForm } from "@/components/password-form";
 
 export default function HomePage() {
@@ -61,51 +61,59 @@ export default function HomePage() {
   if (!formReady) return null;
 
   return (
-    <div className="flex min-h-screen justify-center md:h-screen p-4 bg-accent">
-      <Card className="w-full max-w-3xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">
+    <div className="flex min-h-screen items-center justify-center p-4 bg-accent">
+      <Card className="w-full max-w-4xl">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl font-bold">
             Password Generator
           </CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="grid gap-6 shrink-0">
           <PasswordForm form={form} onSubmit={onSubmit} />
-        </CardContent>
 
-        <CardFooter className="flex flex-col gap-6 flex-1 min-h-0">
-          <Field className="grid grid-cols-3 *:cursor-pointer">
+          <Field className="grid grid-cols-3 gap-2 *:cursor-pointer">
             <Button type="submit" form="rhf-password-form">
               Generate
             </Button>
-            <Button variant="outline" type="button" onClick={copySingle}>
+            <Button variant="outline" onClick={copySingle}>
               Copy
             </Button>
-            <Button variant="outline" type="button" onClick={copyAll}>
+            <Button variant="outline" onClick={copyAll}>
               Copy All
             </Button>
           </Field>
+        </CardContent>
 
-          {/* Scrollable container */}
-          <div className="w-full flex-1 min-h-0 max-h-[50vh] md:max-h-screen">
-            <ScrollArea className="h-full overflow-auto rounded-md border">
-              <div className="space-y-1 p-2" ref={displayRef}>
-                {passwords.map((item, index) => (
-                  <PasswordItem
-                    key={index}
-                    item={item}
-                    highlighted={copiedIndex === "all" || copiedIndex === index}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
+        <CardFooter>
+          <ScrollArea className="h-full max-h-[50vh] md:max-h-screen w-full overflow-auto rounded-md border">
+            <div className="p-4 space-y-1">
+              {passwords.map((item, index) => {
+                const highlighted =
+                  copiedIndex === "all" || copiedIndex === index;
+
+                return (
+                  <div key={index} className={highlighted ? "bg-accent" : ""}>
+                    {item}
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
+
+          {/* <ScrollArea className="w-full h-full overflow-auto rounded-md border">
+            <div ref={displayRef} className="p-2 space-y-1">
+              {passwords.map((item, index) => (
+                <PasswordItem
+                  key={index}
+                  item={item}
+                  highlighted={copiedIndex === "all" || copiedIndex === index}
+                />
+              ))}
+            </div>
+          </ScrollArea> */}
         </CardFooter>
       </Card>
     </div>
   );
-}
-
-function PasswordItem({ item, highlighted }) {
-  return <p className={highlighted ? "bg-accent" : ""}>{item}</p>;
 }
