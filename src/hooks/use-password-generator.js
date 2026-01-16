@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { copyToClipboard, generatePassword } from "@/lib/utils";
+import { copyToClipboard } from "@/utils/copy-to-clipboard";
+import { generatePassword } from "@/utils/generate-password";
 
 export function usePasswordGenerator() {
   const [passwords, setPasswords] = useState([]);

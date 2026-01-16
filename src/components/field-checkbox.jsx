@@ -10,7 +10,7 @@ import {
   FieldLegend,
 } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
-import { optionItems } from "@/lib/constants/option";
+import { optionItems } from "@/config/constants";
 
 export function FieldCheckbox({ title, name, control }) {
   return (
