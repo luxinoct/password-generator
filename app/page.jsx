@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { passwordSchema } from "@/schemas/password.schema";
+import { passwordSchema } from "@/schemas/password";
 import { usePasswordGenerator } from "@/hooks/use-password-generator";
 import { useFormPersistence } from "@/hooks/use-form-persistence";
 
