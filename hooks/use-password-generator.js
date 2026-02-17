@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { copyToClipboard } from "@/utils/copy-to-clipboard";
-import { generatePassword } from "@/utils/generate-password";
+import { copyToClipboard } from "@/lib/genpass/copy-to-clipboard";
+import { generatePassword } from "@/lib/genpass/generate-password";
 
 export function usePasswordGenerator() {
   const [passwords, setPasswords] = useState([]);
@@ -33,14 +33,14 @@ export function usePasswordGenerator() {
       const optionMap = Object.fromEntries(options.map((opt) => [opt, true]));
 
       const generated = Array.from({ length: quantity }, () =>
-        generatePassword(optionMap, length)
+        generatePassword(optionMap, length),
       );
 
       setPasswords(generated);
       setCopiedIndex(null);
       scrollToTop();
     },
-    [scrollToTop]
+    [scrollToTop],
   );
 
   // -----------------------------
