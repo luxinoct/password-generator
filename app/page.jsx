@@ -2,7 +2,7 @@ import { PasswordForm } from "./_components/password-form";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen md:flex md:items-center md:justify-center p-4 bg-accent">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4 bg-accent">
       <div className="w-full max-w-4xl">
         <PasswordForm />
       </div>

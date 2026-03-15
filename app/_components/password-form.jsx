@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 import { passwordSchema } from "../_schemas/password";
 import { usePasswordGenerator } from "../_hooks/use-password-generator";
@@ -15,12 +15,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field } from "@/components/ui/field";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
 import { FieldCheckbox } from "./field-checkbox";
-import { FieldInput } from "./field-input";
+import { cn } from "@/lib/utils";
 
 export function PasswordForm() {
   const form = useForm({
@@ -37,7 +38,7 @@ export function PasswordForm() {
   // Load saved settings if available
   useFormPersistence(form, passwordSchema, () => setFormReady(true));
 
-  const { generate, copySingle, copyAll, passwords, copiedIndex } =
+  const { generate, copySingle, copyAll, passwords, copiedIndex, displayRef } =
     usePasswordGenerator();
 
   // Helper for generate
@@ -57,7 +58,7 @@ export function PasswordForm() {
   }, [formReady, runGenerateFromForm]);
 
   // Standard submit handler
-  const onSubmit = () => {
+  const handleGenerate = () => {
     runGenerateFromForm();
   };
 
@@ -71,20 +72,61 @@ export function PasswordForm() {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="grid gap-6 shrink-0">
-        <form id="rhf-password-form" onSubmit={form.handleSubmit(onSubmit)}>
+      <CardContent>
+        <form
+          id="rhf-password-form"
+          onSubmit={form.handleSubmit(handleGenerate)}
+        >
           <FieldSet>
             <FieldGroup className="grid md:grid-cols-2">
-              <FieldInput
+              <Controller
                 name="length"
                 control={form.control}
-                title="Password Length"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel
+                      htmlFor={`rhf-password-form-length`}
+                      aria-invalid={fieldState.invalid}
+                    >
+                      Password Length
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id={`rhf-password-form-length`}
+                      aria-invalid={fieldState.invalid}
+                      type="number"
+                      autoComplete="off"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
 
-              <FieldInput
+              <Controller
                 name="quantity"
                 control={form.control}
-                title="Quantity"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel
+                      htmlFor={`rhf-password-form-quantity`}
+                      aria-invalid={fieldState.invalid}
+                    >
+                      Quantity
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id={`rhf-password-form-quantity`}
+                      aria-invalid={fieldState.invalid}
+                      type="number"
+                      autoComplete="off"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
             </FieldGroup>
 
@@ -93,31 +135,37 @@ export function PasswordForm() {
               name="options"
               control={form.control}
             />
+
+            <Field className="grid grid-cols-3 gap-2 *:cursor-pointer">
+              <Button type="submit" form="rhf-password-form">
+                Generate
+              </Button>
+              <Button type="button" variant="outline" onClick={copySingle}>
+                Copy
+              </Button>
+              <Button type="button" variant="outline" onClick={copyAll}>
+                Copy All
+              </Button>
+            </Field>
           </FieldSet>
         </form>
-
-        <Field className="grid grid-cols-3 gap-2 *:cursor-pointer">
-          <Button type="submit" form="rhf-password-form">
-            Generate
-          </Button>
-          <Button variant="outline" onClick={copySingle}>
-            Copy
-          </Button>
-          <Button variant="outline" onClick={copyAll}>
-            Copy All
-          </Button>
-        </Field>
       </CardContent>
 
       <CardFooter>
-        <ScrollArea className="h-full max-h-[50vh] w-full overflow-auto rounded-md border">
-          <div className="p-4 space-y-1">
+        <ScrollArea
+          className="h-full max-h-[50vh] w-full overflow-auto rounded-md border"
+          viewportRef={displayRef}
+        >
+          <div className="p-4 space-y-0.5">
             {passwords.map((item, index) => {
               const highlighted =
                 copiedIndex === "all" || copiedIndex === index;
 
               return (
-                <div key={index} className={highlighted ? "bg-accent" : ""}>
+                <div
+                  key={index}
+                  className={cn(highlighted ? "bg-accent/50" : "")}
+                >
                   {item}
                 </div>
               );

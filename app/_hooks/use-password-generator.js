@@ -17,9 +17,12 @@ export function usePasswordGenerator() {
 
   const scrollToIndex = useCallback((index) => {
     const list = displayRef.current;
-    if (!list || !list.children?.[index]) return;
+    // The ScrollArea element wraps our content in a div.
+    // The direct children of viewport might be just a single <div> that contains all items.
+    // So we search for the specific child item.
+    if (!list || !list.children?.[0]?.children?.[index]) return;
 
-    list.children[index].scrollIntoView({
+    list.children[0].children[index].scrollIntoView({
       behavior: "smooth",
       block: "nearest",
     });
