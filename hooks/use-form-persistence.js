@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const storageKey = "save";
+const storageKey = "settings";
 
 export function useFormPersistence(form, schema, onReady) {
   const hasInitialized = useRef(false);
@@ -33,7 +33,7 @@ export function useFormPersistence(form, schema, onReady) {
   useEffect(() => {
     const subscription = form.watch((value) => {
       try {
-        const isSaveEnabled = value.options.includes("saveSetting");
+        const isSaveEnabled = value.options.includes("save");
 
         if (isSaveEnabled) {
           localStorage.setItem(storageKey, JSON.stringify(value));

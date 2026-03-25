@@ -1,6 +1,12 @@
+import { Geist } from "next/font/google";
 import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
 
 export const metadata = {
   title: "Password Generator",
@@ -9,7 +15,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${geistSans.className} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <body>
         <ThemeProvider
           attribute="class"

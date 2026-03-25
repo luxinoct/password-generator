@@ -3,10 +3,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { cn } from "@/lib/utils";
 
-import { passwordSchema } from "../_schemas/password";
-import { usePasswordGenerator } from "../_hooks/use-password-generator";
-import { useFormPersistence } from "../_hooks/use-form-persistence";
+import { usePasswordGenerator } from "@/hooks/use-password-generator";
+import { useFormPersistence } from "@/hooks/use-form-persistence";
 
 import {
   Card,
@@ -15,41 +16,78 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+} from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
-import { FieldCheckbox } from "./field-checkbox";
-import { cn } from "@/lib/utils";
+import { OptionChekbox } from "./option-checkbox";
 
-export function PasswordForm() {
+const formSchema = z.object({
+  length: z.coerce
+    .number({ error: "Password length must be a number" })
+    .min(4, "Password length must be at least 4 characters")
+    .max(32, "Password length cannot exceed 32 characters"),
+
+  quantity: z.coerce
+    .number({ error: "Quantity must be a number" })
+    .min(1, "You must generate at least 1 password")
+    .max(5000, "You can generate up to 5000 passwords at a time"),
+  options: z.array(z.string()).refine(
+    (value) => {
+      const required = ["uppercase", "lowercase", "number", "symbol"];
+      return value.some((id) => required.includes(id));
+    },
+    {
+      error: "Select at least one character type",
+    },
+  ),
+});
+
+export function GeneratePasswordForm() {
+  const [formReady, setFormReady] = useState(false);
+  const {
+    passwords,
+    copiedItemIndex,
+    generatePasswords,
+    copyNextPassword,
+    copyAllPasswords,
+  } = usePasswordGenerator();
+
   const form = useForm({
-    resolver: zodResolver(passwordSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       length: 8,
       quantity: 1,
-      options: ["uppercase", "lowercase", "number", "symbol"],
+      options: [
+        "uppercase",
+        "lowercase",
+        "number",
+        "symbol",
+        "beginWithLetter",
+        "excludeDuplicate",
+        "excludeSimilar",
+      ],
     },
   });
 
-  const [formReady, setFormReady] = useState(false);
-
   // Load saved settings if available
-  useFormPersistence(form, passwordSchema, () => setFormReady(true));
-
-  const { generate, copySingle, copyAll, passwords, copiedIndex, displayRef } =
-    usePasswordGenerator();
+  useFormPersistence(form, formSchema, () => setFormReady(true));
 
   // Helper for generate
   const runGenerateFromForm = useCallback(() => {
     const { length, quantity, options } = form.getValues();
-    generate({
+    generatePasswords({
       length,
       quantity,
       options: options.filter((opt) => opt !== "saveSetting"),
     });
-  }, [form, generate]);
+  }, [form, generatePasswords]);
 
   // Generate password automatically once the form is ready
   useEffect(() => {
@@ -73,10 +111,7 @@ export function PasswordForm() {
       </CardHeader>
 
       <CardContent>
-        <form
-          id="rhf-password-form"
-          onSubmit={form.handleSubmit(handleGenerate)}
-        >
+        <form onSubmit={form.handleSubmit(handleGenerate)}>
           <FieldSet>
             <FieldGroup className="grid md:grid-cols-2">
               <Controller
@@ -85,65 +120,72 @@ export function PasswordForm() {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel
-                      htmlFor={`rhf-password-form-length`}
+                      htmlFor="length"
                       aria-invalid={fieldState.invalid}
                     >
                       Password Length
                     </FieldLabel>
                     <Input
                       {...field}
-                      id={`rhf-password-form-length`}
+                      id="length"
                       aria-invalid={fieldState.invalid}
-                      type="number"
                       autoComplete="off"
                     />
-                    {fieldState.invalid && (
+                    {fieldState.invalid ? (
                       <FieldError errors={[fieldState.error]} />
+                    ) : (
+                      <FieldDescription>
+                        Password length must be between 4 and 32
+                      </FieldDescription>
                     )}
                   </Field>
                 )}
               />
-
               <Controller
                 name="quantity"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel
-                      htmlFor={`rhf-password-form-quantity`}
+                      htmlFor="quantity"
                       aria-invalid={fieldState.invalid}
                     >
                       Quantity
                     </FieldLabel>
                     <Input
                       {...field}
-                      id={`rhf-password-form-quantity`}
+                      id="quantity"
                       aria-invalid={fieldState.invalid}
-                      type="number"
                       autoComplete="off"
                     />
-                    {fieldState.invalid && (
+                    {fieldState.invalid ? (
                       <FieldError errors={[fieldState.error]} />
+                    ) : (
+                      <FieldDescription>
+                        Quantity must be between 1 and 5000
+                      </FieldDescription>
                     )}
                   </Field>
                 )}
               />
             </FieldGroup>
 
-            <FieldCheckbox
-              title="Options"
-              name="options"
-              control={form.control}
-            />
+            <OptionChekbox name="options" control={form.control} />
 
             <Field className="grid grid-cols-3 gap-2 *:cursor-pointer">
-              <Button type="submit" form="rhf-password-form">
-                Generate
-              </Button>
-              <Button type="button" variant="outline" onClick={copySingle}>
+              <Button type="submit">Generate</Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={copyNextPassword}
+              >
                 Copy
               </Button>
-              <Button type="button" variant="outline" onClick={copyAll}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={copyAllPasswords}
+              >
                 Copy All
               </Button>
             </Field>
@@ -152,21 +194,22 @@ export function PasswordForm() {
       </CardContent>
 
       <CardFooter>
-        <ScrollArea
-          className="h-full max-h-[50vh] w-full overflow-auto rounded-md border"
-          viewportRef={displayRef}
-        >
-          <div className="p-4 space-y-0.5">
-            {passwords.map((item, index) => {
+        <ScrollArea className="h-full max-h-[50vh] w-full overflow-auto rounded-md border">
+          <div className="p-4 space-y-1">
+            {passwords.map((password, index) => {
               const highlighted =
-                copiedIndex === "all" || copiedIndex === index;
+                copiedItemIndex === "all" || copiedItemIndex === index;
 
               return (
                 <div
                   key={index}
-                  className={cn(highlighted ? "bg-accent/50" : "")}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-md",
+                    highlighted && "bg-accent/50",
+                  )}
                 >
-                  {item}
+                  <span className="text-muted-foreground">{index + 1}.</span>
+                  <span className="font-mono">{password}</span>
                 </div>
               );
             })}

@@ -22,17 +22,16 @@ const optionItems = [
     id: "excludeSimilar",
     title: "Exclude Similar-Looking Characters (i, I, l, 1, o, O, 0)",
   },
-  { id: "saveSetting", title: "Save Setting" },
+  { id: "save", title: "Save Setting" },
 ];
 
-export function FieldCheckbox({ title, name, control }) {
+export function OptionChekbox({ name, control }) {
   return (
     <FieldGroup>
       <FieldSet>
         <FieldLegend variant="label" className="text-sm">
-          {title}
+          Settings
         </FieldLegend>
-
         <Controller
           name={name}
           control={control}
@@ -80,7 +79,6 @@ export function FieldCheckbox({ title, name, control }) {
                     );
                   })}
                 </div>
-
                 {/* Error message full width below the grid */}
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
