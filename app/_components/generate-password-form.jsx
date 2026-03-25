@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
 import { OptionChekbox } from "./option-checkbox";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   length: z.coerce
@@ -208,7 +209,7 @@ export function GeneratePasswordForm() {
                     highlighted && "bg-accent/50",
                   )}
                 >
-                  <span className="text-muted-foreground">{index + 1}.</span>
+                  <Label className="text-muted-foreground">{index + 1}.</Label>
                   <span className="font-mono">{password}</span>
                 </div>
               );
