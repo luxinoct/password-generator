@@ -1,4 +1,4 @@
-import { GeneratePasswordForm } from "./_components/generate-password-form";
+import { GeneratePasswordForm } from "@/components/generate-password-form";
 
 export default function HomePage() {
   return (
