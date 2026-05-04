@@ -5,9 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
-
 import { usePasswordGenerator } from "@/hooks/use-password-generator";
 import { useFormPersistence } from "@/hooks/use-form-persistence";
+import { optionItems } from "@/constants/options";
 
 import {
   Card,
@@ -21,13 +21,15 @@ import {
   FieldLabel,
   FieldError,
   FieldDescription,
+  FieldGroup,
+  FieldSet,
+  FieldLegend,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FieldGroup, FieldSet } from "@/components/ui/field";
-import { OptionChekbox } from "./option-checkbox";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "./ui/checkbox";
 
 const formSchema = z.object({
   length: z.coerce
@@ -171,7 +173,76 @@ export function GeneratePasswordForm() {
               />
             </FieldGroup>
 
-            <OptionChekbox name="options" control={form.control} />
+            <FieldGroup>
+              <FieldSet>
+                <FieldLegend variant="label" className="text-sm">
+                  Settings
+                </FieldLegend>
+                <Controller
+                  name="options"
+                  control={form.control}
+                  render={({ field, fieldState }) => {
+                    return (
+                      <div className="flex flex-col gap-2">
+                        {/* Checkbox Grid */}
+                        <div className="grid md:grid-cols-2 gap-2">
+                          {optionItems.map((item) => {
+                            const REQUIRED_OPTION_IDS = [
+                              "uppercase",
+                              "lowercase",
+                              "number",
+                              "symbol",
+                            ];
+                            const isRequired = REQUIRED_OPTION_IDS.includes(
+                              item.id,
+                            );
+
+                            return (
+                              <Field
+                                key={item.id}
+                                orientation="horizontal"
+                                data-invalid={fieldState.invalid && isRequired}
+                              >
+                                <Checkbox
+                                  id={`rhf-password-form-${item.id}`}
+                                  checked={field.value.includes(item.id)}
+                                  onCheckedChange={(checked) => {
+                                    const newValue = checked
+                                      ? [...field.value, item.id]
+                                      : field.value.filter(
+                                          (v) => v !== item.id,
+                                        );
+                                    field.onChange(newValue);
+                                  }}
+                                  aria-invalid={
+                                    fieldState.invalid && isRequired
+                                  }
+                                  className="cursor-pointer"
+                                />
+
+                                <FieldLabel
+                                  htmlFor={`rhf-password-form-${item.id}`}
+                                  className="font-normal"
+                                  aria-invalid={
+                                    fieldState.invalid && isRequired
+                                  }
+                                >
+                                  {item.title}
+                                </FieldLabel>
+                              </Field>
+                            );
+                          })}
+                        </div>
+                        {/* Error message full width below the grid */}
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </div>
+                    );
+                  }}
+                />
+              </FieldSet>
+            </FieldGroup>
 
             <Field className="grid grid-cols-3 gap-2 *:cursor-pointer">
               <Button type="submit">Generate</Button>
@@ -195,8 +266,8 @@ export function GeneratePasswordForm() {
       </CardContent>
 
       <CardFooter>
-        <ScrollArea className="h-full max-h-[50vh] w-full overflow-auto rounded-md border">
-          <div className="p-4 space-y-1">
+        <ScrollArea className="h-full max-h-[50vh] w-full overflow-auto rounded-md border shadow-xs">
+          <div className="p-2 space-y-1">
             {passwords.map((password, index) => {
               const highlighted =
                 copiedItemIndex === "all" || copiedItemIndex === index;
@@ -205,11 +276,10 @@ export function GeneratePasswordForm() {
                 <div
                   key={index}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md",
+                    "flex items-center p-0.5",
                     highlighted && "bg-accent/50",
                   )}
                 >
-                  <Label className="text-muted-foreground">{index + 1}.</Label>
                   <span className="font-mono">{password}</span>
                 </div>
               );
