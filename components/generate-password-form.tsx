@@ -118,23 +118,8 @@ export function GeneratePasswordForm() {
   if (!formReady) return null;
 
   return (
-    // <Card>
-    //   <CardHeader>
-    //     <CardTitle className="text-center text-2xl font-bold">
-    //       Password Generator
-    //     </CardTitle>
-    //   </CardHeader>
-
-    //   <CardContent>
-
-    //   </CardContent>
-
-    //   <CardFooter>
-
-    //   </CardFooter>
-    // </Card>
     <div className="flex flex-col flex-1 h-full gap-6">
-      <h1 className="text-2xl font-semibold text-center">Generate Password</h1>
+      <h1 className="text-2xl font-semibold text-center">Password Generator</h1>
 
       <form onSubmit={form.handleSubmit(handleGenerate)}>
         <FieldSet>
