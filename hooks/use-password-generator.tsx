@@ -3,7 +3,7 @@ import { useState, useRef, useCallback } from "react";
 import { generatePassword } from "@/lib/utils";
 
 export function usePasswordGenerator() {
-  const [passwords, setPasswords] = useState([]);
+  const [passwords, setPasswords] = useState<string[]>([]);
   const [copiedItemIndex, setCopiedItemIndex] = useState<any>(null);
   const containerRef = useRef(null);
 
