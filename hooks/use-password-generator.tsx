@@ -1,15 +1,23 @@
 import { useState, useRef, useCallback } from "react";
 
-import { generatePassword } from "@/lib/generate-password";
+import { generatePassword } from "@/lib/utils";
 
 export function usePasswordGenerator() {
   const [passwords, setPasswords] = useState([]);
-  const [copiedItemIndex, setCopiedItemIndex] = useState(null);
+  const [copiedItemIndex, setCopiedItemIndex] = useState<any>(null);
   const containerRef = useRef(null);
 
   // Generate multiple passwords based on user configuration
   const generatePasswords = useCallback(
-    ({ length, quantity, options }) => {
+    ({
+      length,
+      quantity,
+      options,
+    }: {
+      length: number;
+      quantity: number;
+      options: string[];
+    }) => {
       // Convert options array into a lookup map
       const optionMap = Object.fromEntries(
         options.map((option) => [option, true]),

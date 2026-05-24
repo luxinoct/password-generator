@@ -1,8 +1,20 @@
 import { useEffect, useRef } from "react";
+import type { UseFormReturn } from "react-hook-form";
+import type { z } from "zod";
 
 const storageKey = "settings";
 
-export function useFormPersistence(form, schema, onReady) {
+export function useFormPersistence(
+  form: UseFormReturn<{
+    length: number;
+    options: string[];
+  }>,
+  schema: z.ZodObject<{
+    length: z.ZodNumber;
+    options: z.ZodArray<z.ZodString>;
+  }>,
+  onReady?: () => void,
+) {
   const hasInitialized = useRef(false);
 
   // Load saved data on mount (only once)
@@ -33,7 +45,7 @@ export function useFormPersistence(form, schema, onReady) {
   useEffect(() => {
     const subscription = form.watch((value) => {
       try {
-        const isSaveEnabled = value.options.includes("save");
+        const isSaveEnabled = value?.options?.includes("save");
 
         if (isSaveEnabled) {
           localStorage.setItem(storageKey, JSON.stringify(value));
